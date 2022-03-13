@@ -1,6 +1,6 @@
 library flutter_floodfill_image;
 
-export 'src/floodfill.dart';
 export 'src/extensions.dart';
-export 'src/image_handlers.dart';
-export 'src/filters.dart';
+export 'src/floodfill.dart';
+export 'src/flood_fill_controller.dart';
+export 'src/flood_fill_widget.dart';

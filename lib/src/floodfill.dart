@@ -1,5 +1,5 @@
 import 'dart:collection';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:image/image.dart';
 
 class FloodFill {
@@ -8,8 +8,17 @@ class FloodFill {
 
   Image get getImage => image;
 
-  void queueFloodFill(Image image, int x, int y, int newColor) {
+  Uint8List get getBuffer => Uint8List.fromList(encodePng(image));
+
+  ///[image] an Image object
+  ///[x] and [y] are pixel positions to start fill.
+  ///[newColor] is the int32 rgba color.
+  ///use toInt8 to convert int32 to List of r,g,b,a values
+  queueFloodFill(int x, int y, int newColor, int avoidColor) {
     int srcColor = image.getPixel(x, y);
+    if (srcColor == avoidColor) {
+      return;
+    }
     List<List<bool>> hits = List.generate(
         image.height, (index) => List.generate(image.width, (index) => false));
 
@@ -17,38 +26,22 @@ class FloodFill {
     queue.add(Point(x, y));
 
     while (queue.isNotEmpty) {
+      // print("NOT EMPTY");
       Point p = queue.removeFirst();
 
-      if (lineFill(image, hits, p.x.toInt(), p.y.toInt(), srcColor, newColor)) {
+      if (_lineFill(
+          image, hits, p.x.toInt(), p.y.toInt(), srcColor, newColor)) {
         queue.add(Point(p.x, p.y - 1));
         queue.add(Point(p.x, p.y + 1));
         queue.add(Point(p.x - 1, p.y));
         queue.add(Point(p.x + 1, p.y));
       }
     }
+    // print("DONE");
   }
 
-  basicFill(int x, int y, int oldColor, int newColor) {
-    if (x < 0 || x >= image.width) return;
-    if (y < 0 || y >= image.height) return;
-
-    int currentColor = image.getPixel(x, y);
-
-    if (currentColor == oldColor) {
-      image.setPixel(x, y, newColor);
-      basicFill(x + 1, y, oldColor, newColor);
-      basicFill(x - 1, y, oldColor, newColor);
-      basicFill(x, y + 1, oldColor, newColor);
-      basicFill(x, y - 1, oldColor, newColor);
-      basicFill(x + 1, y + 1, oldColor, newColor);
-      basicFill(x - 1, y + 1, oldColor, newColor);
-      basicFill(x + 1, y - 1, oldColor, newColor);
-      basicFill(x - 1, y - 1, oldColor, newColor);
-    }
-  }
-
-  bool lineFill(Image image, List<List<bool>> hits, int x, int y, int srcColor,
-      int tgtColor) {
+  bool _lineFill(Image image, List<List<bool>> hits, int x, int y, int srcColor,
+      int targetColor) {
     ///[x] and [y] must not be negative
     ///[x] and [y] must not be larger than image size
     if (y < 0 || x < 0 || y > image.height - 1 || x > image.width - 1) {
@@ -64,7 +57,7 @@ class FloodFill {
     }
 
     ///else fill pixel with target color
-    image.setPixel(x, y, tgtColor);
+    image.setPixel(x, y, targetColor);
 
     ///assign hit
     hits[y][x] = true;
