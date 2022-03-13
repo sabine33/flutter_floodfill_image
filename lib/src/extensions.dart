@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:image/image.dart';
 
 extension ToInt32 on List<int> {

@@ -21,18 +21,13 @@ Implementation of floodfill in flutter
 
 ## Usage
 
-
-
 ```dart
 FloodFillWidget(
-    controller:FloodFillController(imageBytes),
-    
-)
+                      key: UniqueKey(),
+                      fillColor: [255,0,0,255].toInt32(),
+                      controller: FloodFillController(imageBytes),
+                    );
 ```
 
-## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
-# flutter_floodfill_image
+
